@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+
+<sdf version="1.5">
+  <world name= "velodyne_test">
+
+    <include>
+        <uri>model://sun</uri>
+    </include>
+
+    <!-- A ground plane  -->
+    <include>
+        <uri>model://ground_plane</uri>
+    </include>
+
+    <model name="my_velodyne">
+      <include>
+        <uri>model://velodyne_VLP16</uri>
+      </include>
+      <pose>0 0 0 0 0 0</pose>
+      <!-- Attaching the plugin to this model -->
+      <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_velodyne_gpu_laser.so">
+        <topicName>/velodyne_points</topicName>
+        <hz>30</hz>
+        <samples>220</samples>
+        <gpu>false</gpu>
+      </plugin>
+    </model>
+  </world>
+</sdf>

@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<robot name = "VLP-16" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="gpu" default="false"/>
+  <xacro:property name="gpu" value="$(arg gpu)" />
+  <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+  <xacro:VLP-16 parent="base_link" name="velodyne" topic="/velodyne_points" hz="30" samples="440" gpu="${gpu}">
+    <origin xyz="0 0 0.4" rpy="0 0 0" />
+  </xacro:VLP-16>
+</robot>
