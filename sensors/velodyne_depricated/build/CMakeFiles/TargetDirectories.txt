@@ -1,4 +1,0 @@
-/home/neelaksh/catkin_ws/src/aq_project/sensors/velodyne/build/CMakeFiles/rebuild_cache.dir
-/home/neelaksh/catkin_ws/src/aq_project/sensors/velodyne/build/CMakeFiles/edit_cache.dir
-/home/neelaksh/catkin_ws/src/aq_project/sensors/velodyne/build/CMakeFiles/vel.dir
-/home/neelaksh/catkin_ws/src/aq_project/sensors/velodyne/build/CMakeFiles/velodyne_plugin.dir
