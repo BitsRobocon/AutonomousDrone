@@ -1,0 +1,55 @@
+
+# docker image with test packages installed
+
+# base image is ubuntu(18 for melodic)
+FROM ubuntu:18.04
+
+# install cowsay. just cuz
+RUN apt-get update && apt-get install -y cowsay
+
+# install sudo 
+RUN apt-get install sudo -y
+
+#some other handy tools:
+RUN sudo apt-get install unzip
+
+# install pcl 
+# Command line arguments don't work. So manually install in container
+# RUN apt-get install -y libpcl-dev
+
+#############################################
+##           BEGIN INSTALLATION
+#############################################
+# Install all packages in ~/playground
+RUN cd && mkdir playground && cd playground
+
+# Install toolchain(pixhawk):
+#1)get the bash script
+RUN wget "https://raw.githubusercontent.com/PX4/Devguide/v1.9.0/build_scripts/ubuntu_sim_nuttx.sh" > ubuntu_sim_nuttx.sh
+#2) install 
+RUN sudo ./ubuntu_sim_nuttx.sh -y
+
+# Gazebo
+RUN "https://raw.githubusercontent.com/PX4/Devguide/v1.9.0/build_scripts/ubuntu_sim_ros_melodic.sh" > ubuntu_sim_ros_melodic.sh
+RUN sudo ./ubuntu_sim_ros_melodic.sh -y
+
+# get PX4 firmware zip from github
+# creates Firmware folder in ~/playground/Firmware-master
+RUN wget https://github.com/anirudhs001/Firmware/archive/master.zip
+RUN unzip master.zip
+RUN cd Firmware-master
+
+#start the  build!
+RUN make px4_sitl 
+
+# Everything is setup!
+CMD echo "'ello there. We are good to go!"
+
+# 1)Create interactive container from image and start bash with
+# sudo docker run <image_name> -it bash
+# 2) Reopen existing container:
+# *use sudo docker ps -a to view existing containers
+#   a) Start it with:
+#       sudo docker start <container_name or container_id>
+#   b) attach it to tty with: (container should have been created with "-it bash" to get a bash everytime)
+#       sudo docker attach <container_name or container_id>
