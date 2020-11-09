@@ -4,36 +4,55 @@
 
 #define pass (void)0
 
+int getIndex(std::vector<std::string> v, std::string search_element) {
+    for(int i = 0; i < v.size(); i++) {
+        if(v[i].compare(search_element) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 class GazeboLinkPose {
     public:
         ros::Subscriber gazebo_sub;
         ros::Publisher link_state_pub;
+        geometry_msgs::PoseStamped link_pose;
 
         GazeboLinkPose(std::string _link_name, ros::NodeHandle nh) {
             link_name = _link_name;
             link_name_rectified = link_name.replace(link_name.find(toReplace), toReplace.length(), "_");
 
-            gazebo_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 500, link_state_callback());
-            link_state_pub = nh.advertise<geometry_msgs::PoseStamped>("/gazebo/" + link_name, 500);
+            gazebo_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 500, &GazeboLinkPose::link_state_callback, this);
+            link_state_pub = nh.advertise<geometry_msgs::PoseStamped>("/robot_setup_tf/" + link_name_rectified, 500);
+
+            // if(nh.ok()) {
+            //     ros::spinOnce(); // https://answers.ros.org/question/282259/ros-class-with-callback-methods/
+            // }
         }
         
         ~GazeboLinkPose(){
 
         }
-        
-        void link_state_callback(const gazebo_msgs::LinkStates msg) {
+
+        void link_state_callback(const gazebo_msgs::LinkStates::ConstPtr& msg) {
             try {
-                int ind = msg.name.index(link_name);
-                link_pose = msg.pose[ind];
+                // int ind = msg.name.index(link_name);
+                int ind = getIndex(msg->name, link_name);
+                if(ind) {
+                    link_pose.pose = msg->pose[ind];
+                }
+                else {
+                    throw "Unable to find the link's name in Gazebo's link_states name index. Please check whether the name provided is correct";
+                }
             }
-            catch {
-                pass;
+            catch(const char* e) {
+                ROS_INFO("WARNING: [%s]", e);
             }
         }
 
     private:
         std::string link_name;
-        geometry_msgs::PoseStamped link_pose;
         std::string link_name_rectified;
         std::string toReplace = "::";
 
@@ -45,17 +64,17 @@ int main(int argc, char **argv) {
     ros::spin();
 
     std::string link_name;
-    ros::Rate r;
-
-    n.param<ros::Rate>("publish_rate", r, 70)
-    n.param<std::string>("link_name", link_name, "base_link")
+    int r;
+    n.param<int>("publish_rate", r, 70);
+    ros::Rate loop_rate(r);
+    n.param<std::string>("link_name", link_name, "if750a::base_link");
     
     while(n.ok()) {
         GazeboLinkPose gp(link_name, n);
         gp.link_state_pub.publish(gp.link_pose);
-        ros::spinOnce();
-        r.sleep();
+        ros::spinOnce(); // https://answers.ros.org/question/282259/ros-class-with-callback-methods/
+        loop_rate.sleep();
     }
 
-    return 0
+    return 0;
 }
