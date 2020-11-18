@@ -1,3 +1,4 @@
 <launch>
     <node pkg="robot_setup_tf" type="uav_tf_broadcaster" name="uav_tf_broadcaster" />
+    <node pkg="robot_setup_tf" type="gazebo_link_pose_publisher" name="gazebo_link_pose_publisher" />
 </launch>

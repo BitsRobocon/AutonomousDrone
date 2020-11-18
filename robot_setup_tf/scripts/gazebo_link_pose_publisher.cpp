@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <ros/console.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <gazebo_msgs/LinkStates.h>
 
@@ -21,13 +22,14 @@ class GazeboLinkPose {
 
         GazeboLinkPose(std::string _link_name, ros::NodeHandle nh) {
             link_name = _link_name;
-            link_name_rectified = link_name.replace(link_name.find(toReplace), toReplace.length(), "_");
+            link_name_rectified = link_name;
+            link_name_rectified = link_name_rectified.replace(link_name.find(toReplace), toReplace.length(), "_");
 
-            gazebo_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 500, &GazeboLinkPose::link_state_callback, this);
-            link_state_pub = nh.advertise<geometry_msgs::PoseStamped>("/robot_setup_tf/" + link_name_rectified, 500);
+            gazebo_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 100, &GazeboLinkPose::link_state_callback, this);
+            link_state_pub = nh.advertise<geometry_msgs::PoseStamped>("/robot_setup_tf/" + link_name_rectified, 100);
 
             // if(nh.ok()) {
-            //     ros::spinOnce(); // https://answers.ros.org/question/282259/ros-class-with-callback-methods/
+            //     ros::spin(); // https://answers.ros.org/question/282259/ros-class-with-callback-methods/
             // }
         }
         
@@ -37,10 +39,11 @@ class GazeboLinkPose {
 
         void link_state_callback(const gazebo_msgs::LinkStates::ConstPtr& msg) {
             try {
-                // int ind = msg.name.index(link_name);
                 int ind = getIndex(msg->name, link_name);
                 if(ind) {
                     link_pose.pose = msg->pose[ind];
+                    link_pose.header.stamp = ros::Time::now();
+                    link_pose.header.frame_id = link_name_rectified;
                 }
                 else {
                     throw "Unable to find the link's name in Gazebo's link_states name index. Please check whether the name provided is correct";
@@ -61,7 +64,6 @@ class GazeboLinkPose {
 int main(int argc, char **argv) {
     ros::init(argc, argv, "gazebo_link_pose", ros::init_options::AnonymousName);
     ros::NodeHandle n;
-    ros::spin();
 
     std::string link_name;
     int r;
@@ -72,8 +74,8 @@ int main(int argc, char **argv) {
     while(n.ok()) {
         GazeboLinkPose gp(link_name, n);
         gp.link_state_pub.publish(gp.link_pose);
-        ros::spinOnce(); // https://answers.ros.org/question/282259/ros-class-with-callback-methods/
         loop_rate.sleep();
+        ros::spin(); // https://answers.ros.org/question/282259/ros-class-with-callback-methods/
     }
 
     return 0;
