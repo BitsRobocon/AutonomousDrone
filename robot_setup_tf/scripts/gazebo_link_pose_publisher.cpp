@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     ros::Rate loop_rate(r);
     n.param<std::string>("link_name", link_name, "if750a::base_link");
 
-    GazeboLinkPose gp(link_name, n); // Had to spend a whole week trying to debug this.
+    GazeboLinkPose gp(link_name, n);
     
     while(n.ok()) {
         gp.link_state_pub.publish(gp.link_pose);
