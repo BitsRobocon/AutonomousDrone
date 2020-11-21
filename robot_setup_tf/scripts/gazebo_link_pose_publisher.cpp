@@ -25,17 +25,18 @@ class GazeboLinkPose {
             link_name_rectified = link_name;
             link_name_rectified = link_name_rectified.replace(link_name.find(toReplace), toReplace.length(), "_");
 
-            gazebo_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 100, &GazeboLinkPose::link_state_callback, this);
-            link_state_pub = nh.advertise<geometry_msgs::PoseStamped>("/robot_setup_tf/" + link_name_rectified, 100);
-
-            // if(nh.ok()) {
-            //     ros::spin(); // https://answers.ros.org/question/282259/ros-class-with-callback-methods/
-            // }
+            gazebo_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 70, &GazeboLinkPose::link_state_callback, this);
+            link_state_pub = nh.advertise<geometry_msgs::PoseStamped>("/robot_setup_tf/" + link_name_rectified, 70);
         }
         
         ~GazeboLinkPose(){
 
         }
+
+    private:
+        std::string link_name;
+        std::string link_name_rectified;
+        std::string toReplace = "::";
 
         void link_state_callback(const gazebo_msgs::LinkStates::ConstPtr& msg) {
             try {
@@ -54,11 +55,6 @@ class GazeboLinkPose {
             }
         }
 
-    private:
-        std::string link_name;
-        std::string link_name_rectified;
-        std::string toReplace = "::";
-
 };
 
 int main(int argc, char **argv) {
@@ -70,12 +66,13 @@ int main(int argc, char **argv) {
     n.param<int>("publish_rate", r, 70);
     ros::Rate loop_rate(r);
     n.param<std::string>("link_name", link_name, "if750a::base_link");
+
+    GazeboLinkPose gp(link_name, n); // Had to spend a whole week trying to debug this.
     
     while(n.ok()) {
-        GazeboLinkPose gp(link_name, n);
         gp.link_state_pub.publish(gp.link_pose);
+        ros::spinOnce(); // https://answers.ros.org/question/282259/ros-class-with-callback-methods/
         loop_rate.sleep();
-        ros::spin(); // https://answers.ros.org/question/282259/ros-class-with-callback-methods/
     }
 
     return 0;
