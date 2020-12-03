@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
         base_link_to_map.sendTransform(
             tf::StampedTransform(
-                pose_handle.getTfFromPose(), ros::Time::now(), "velodyne_base_footprint", "map"
+                pose_handle.getTfFromPose(), ros::Time::now(), "velodyne", "map"
             )
         );
         

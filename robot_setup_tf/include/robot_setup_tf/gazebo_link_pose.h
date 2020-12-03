@@ -9,22 +9,23 @@
 namespace robot_setup_tf{
 
     /**
-     * \brief This class inherits from the GazeboLinkPose class. Subscribes to gazebo/link_states and
+     * @brief This class inherits from the GazeboLinkPose class. Subscribes to gazebo/link_states and
      * converts the retrieved pose to tf::Transform object. By default the tf is from the link to the
      * base map, which is the global reference frame for gazebo.
-    */
+     * 
+     */
     class HandlePoseForTf {
         public:
 
             /**
-             * \brief default constructor.
-            */
+             * @brief default constructor.
+             */
             HandlePoseForTf();
 
             /**
-             * \brief Constructor
-             * \param link_pose The geometry_msgs PoseStamped object to be converted.
-            */
+             * @brief Constructor
+             * @param link_pose The geometry_msgs PoseStamped object to be converted.
+             */
             HandlePoseForTf(geometry_msgs::PoseStamped _link_pose);
 
             ~HandlePoseForTf();
