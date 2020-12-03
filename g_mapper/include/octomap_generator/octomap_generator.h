@@ -64,8 +64,6 @@ namespace g_mapper {
 
             /// Save octomap to a file.
             virtual bool save(const char* filename) const = 0;
-
-        protected:
     };
 
     /**
@@ -79,7 +77,7 @@ namespace g_mapper {
             
             OctomapGenerator();
 
-            virtual ~OctomapGenerator(); // https://stackoverflow.com/questions/461203/when-to-use-virtual-destructors
+            virtual ~OctomapGenerator() {}; // https://stackoverflow.com/questions/461203/when-to-use-virtual-destructors
 
             virtual void setMaxRange(float _max_range) { 
                 max_range = _max_range; 
@@ -103,6 +101,14 @@ namespace g_mapper {
 
             virtual void setProbMiss(float _prob_miss) {
                 octomap_.setProbMiss( _prob_miss );
+            }
+
+            virtual void setResolution(float _resolution) {
+                octomap_.setResolution(_resolution);
+            }
+
+            virtual void setOccupancyThres(float _occupancy_thres) {
+                octomap_.setOccupancyThres(_occupancy_thres);
             }
 
             /**

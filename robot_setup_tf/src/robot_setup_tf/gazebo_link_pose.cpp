@@ -21,10 +21,18 @@ namespace robot_setup_tf{
     tf::Transform HandlePoseForTf::getTfFromPose() {
         int sg = neg_flag ? -1 : 1;
         pose_trans = tf::Vector3(sg*(link_pose.pose.position.x), sg*(link_pose.pose.position.y), sg*(link_pose.pose.position.z));
-        pose_quat = tf::Quaternion(sg*(link_pose.pose.orientation.x),
-        sg*(link_pose.pose.orientation.y),
-        sg*(link_pose.pose.orientation.z),
-        sg*(link_pose.pose.orientation.w)).normalize();
+        if(!neg_flag) {
+            pose_quat = tf::Quaternion(link_pose.pose.orientation.x,
+            link_pose.pose.orientation.y,
+            link_pose.pose.orientation.z,
+            link_pose.pose.orientation.w).normalize();
+        } else {
+            pose_quat = (tf::Quaternion(link_pose.pose.orientation.x,
+            link_pose.pose.orientation.y,
+            link_pose.pose.orientation.z,
+            link_pose.pose.orientation.w).inverse()).normalize();
+
+        }
         base_to_map_tf.setOrigin(pose_trans);
         base_to_map_tf.setRotation(pose_quat);
 

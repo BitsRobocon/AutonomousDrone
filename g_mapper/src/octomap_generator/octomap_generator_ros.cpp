@@ -6,10 +6,12 @@
 #include <boost/bind.hpp>
 #include <cmath>
 #include <sstream>
+#include <cstring>
 
 namespace g_mapper {
     OctomapGeneratorNode::OctomapGeneratorNode(ros::NodeHandle& _nh) : nh(_nh) {
         // Initiate octree
+        octomap_generator = new OctomapGenerator();
         reset();
         // We will register the callback later after synchronizing. See the reference in th .h file.
         fullmap_pub = nh.advertise<octomap_msgs::Octomap>("octomap_full", 1, true);
@@ -39,6 +41,7 @@ namespace g_mapper {
         nh.getParam("/octomap/occupancy_thres", occupancy_thres);
         nh.getParam("/octomap/prob_hit", prob_hit);
         nh.getParam("/octomap/prob_miss", prob_miss);
+        
         octomap_generator->setClampingThresMin(clamping_thres_min);
         octomap_generator->setClampingThresMax(clamping_thres_max);
         octomap_generator->setResolution(resolution);

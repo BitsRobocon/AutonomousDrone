@@ -15,8 +15,6 @@ namespace g_mapper {
     // The custom constructor of OcTree classes takes resolution as the argument.
     OctomapGenerator::OctomapGenerator() : OctomapGeneratorBase(), octomap_(0.05), max_range(1.0), raycast_range(1.0) { };
 
-    OctomapGenerator::~OctomapGenerator() { };
-
     void OctomapGenerator::insertPointCloud(const pcl::PCLPointCloud2::Ptr& cloud, const Eigen::Matrix4f& sensor_to_world) {
         // We will downsample the point cloud. Creating the filtering object.
         pcl::PCLPointCloud2::Ptr cloud_filtered( new pcl::PCLPointCloud2() );
