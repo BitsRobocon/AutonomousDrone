@@ -42,20 +42,25 @@ SHELL [ "/bin/bash", "-c"]
 ################
 ## 2. setup env 
 # source bash file for roslaunch
-RUN source /opt/ros/melodic/setup.bash
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc && source ~/.bashrc
 
 # get Firmware for px4(renamed to PX4-Autopilot)
 RUN git clone https://github.com/PX4/PX4-Autopilot.git
 
 # catkin_ws 
-RUN mkdir -p ~/catkin_ws/src && cd catkin_ws
-RUN catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python2
-RUN source devel/setup.bash
+RUN mkdir -p ~/catkin_ws/src
+# can't run catkin_make because the current shell is still sh. 
+#this does not work
+# RUN /bin/bash -c catkin_make
+# But this works for some reason ¯\_(ツ)_/¯ (even though I changed the shell to bash above) 
+# RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd catkin_ws; catkin_make'
+# RUN source ~/catkin_ws/devel/setup.bash
 
 
 ####################################
 ## 3. setup sensors and world models 
+# need to update rosdep to run catkin build
+RUN rosdep update
 # get files from bits robocon
-RUN cd ~/catkin_ws/src && git clone -b aq_project https://github.com/BitsRobocon/AutonomousDrone.git 
-RUN cd ~/catkin_ws && catkin build
+RUN cd ~/catkin_ws/src && git clone -b aq_project https://github.com/anirudhs001/AutonomousDrone.git 
 
