@@ -6,16 +6,20 @@ ARG user
 # Use images given by px4. check them out at https://hub.docker.com/u/px4io/
 FROM px4io/px4-dev-ros-melodic
 
-#sanity check
+# using different images cleans up the ARG vars. add another ARG var to keep using it after the FROM line.
 ARG user
-RUN echo $user
+
+# Some missing ros packages: rviz and robot setup
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y ros-melodic-rviz \
+                    ros-melodic-robot-state-publisher
 
 ################
 ## 1. setup user
-# 1.1. install sudo first
+# install sudo first
 RUN apt-get update && apt-get install sudo
 
-# 1.2. use same username as $USER
+# use same username as $USER
 # arg vars are temporary, so save it in an env variable
 ENV env_USER=$user
 
@@ -32,22 +36,26 @@ USER $env_USER
 #set the home directory too 
 WORKDIR /home/$env_USER
 
-# use bash instead of sh(to be able to source files)
-
+# use bash instead of sh(to be able to source bash files)
 SHELL [ "/bin/bash", "-c"]
 
 ################
 ## 2. setup env 
-# catkin_ws (not required for any of the steps tho)
-RUN mkdir ~/catkin_ws
 # source bash file for roslaunch
 RUN source /opt/ros/melodic/setup.bash
+
 # get Firmware for px4(renamed to PX4-Autopilot)
 RUN git clone https://github.com/PX4/PX4-Autopilot.git
-# RUN cd PX4_Autopilot && DONT_RUN=1 make px4_sitl_default
+
+# catkin_ws 
+RUN mkdir -p ~/catkin_ws/src && cd catkin_ws
+RUN catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python2
+RUN source devel/setup.bash
+
 
 ####################################
 ## 3. setup sensors and world models 
 # get files from bits robocon
-RUN git clone -b aq_project https://github.com/anirudhs001/AutonomousDrone.git
+RUN cd ~/catkin_ws/src && git clone -b aq_project https://github.com/BitsRobocon/AutonomousDrone.git 
+RUN cd ~/catkin_ws && catkin build
 
