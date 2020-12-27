@@ -3,26 +3,51 @@
 #docker build --build-arg user=$USER
 ARG user
 
-# base image is ubuntu
-# TODO: change to px4io's image
-FROM ubuntu
+# Use images given by px4. check them out at https://hub.docker.com/u/px4io/
+FROM px4io/px4-dev-ros-melodic
 
-# 1. install sudo first
+#sanity check
+ARG user
+RUN echo $user
+
+################
+## 1. setup user
+# 1.1. install sudo first
 RUN apt-get update && apt-get install sudo
 
-# 2. use same username as $USER
+# 1.2. use same username as $USER
 # arg vars are temporary, so save it in an env variable
 ENV env_USER=$user
 
 # add user 
-RUN useradd -ms /bin/bash ${env_USER}
-RUN usermod -aG sudo ${env_USER}
+RUN adduser -shell /bin/bash $env_USER
+RUN usermod -aG sudo $env_USER
 
 # change password
 # PASSWORD is same as username
 RUN echo "${env_USER}:${env_USER}" | sudo chpasswd
 
 # change to user(currently root)
-USER ${env_USER}
+USER $env_USER
 #set the home directory too 
-WORKDIR /home/${env_USER}
+WORKDIR /home/$env_USER
+
+# use bash instead of sh(to be able to source files)
+
+SHELL [ "/bin/bash", "-c"]
+
+################
+## 2. setup env 
+# catkin_ws (not required for any of the steps tho)
+RUN mkdir ~/catkin_ws
+# source bash file for roslaunch
+RUN source /opt/ros/melodic/setup.bash
+# get Firmware for px4(renamed to PX4-Autopilot)
+RUN git clone https://github.com/PX4/PX4-Autopilot.git
+# RUN cd PX4_Autopilot && DONT_RUN=1 make px4_sitl_default
+
+####################################
+## 3. setup sensors and world models 
+# get files from bits robocon
+RUN git clone -b aq_project https://github.com/anirudhs001/AutonomousDrone.git
+
