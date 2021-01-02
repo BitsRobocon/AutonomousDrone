@@ -1,0 +1,66 @@
+
+#arg variables can be specified at build time as:
+#docker build --build-arg user=$USER
+ARG user
+
+# Use images given by px4. check them out at https://hub.docker.com/u/px4io/
+FROM px4io/px4-dev-ros-melodic
+
+# using different images cleans up the ARG vars. add another ARG var to keep using it after the FROM line.
+ARG user
+
+# Some missing ros packages: rviz and robot setup
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y ros-melodic-rviz \
+                    ros-melodic-robot-state-publisher
+
+################
+## 1. setup user
+# install sudo first
+RUN apt-get update && apt-get install sudo
+
+# use same username as $USER
+# arg vars are temporary, so save it in an env variable
+ENV env_USER=$user
+
+# add user 
+RUN adduser -shell /bin/bash $env_USER
+RUN usermod -aG sudo $env_USER
+
+# change password
+# PASSWORD is same as username
+RUN echo "${env_USER}:${env_USER}" | sudo chpasswd
+
+# change to user(currently root)
+USER $env_USER
+#set the home directory too 
+WORKDIR /home/$env_USER
+
+# use bash instead of sh(to be able to source bash files)
+SHELL [ "/bin/bash", "-c"]
+
+################
+## 2. setup env 
+# source bash file for roslaunch
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc && source ~/.bashrc
+
+# get Firmware for px4(renamed to PX4-Autopilot)
+RUN git clone https://github.com/PX4/PX4-Autopilot.git
+
+# catkin_ws 
+RUN mkdir -p ~/catkin_ws/src
+# can't run catkin_make because the current shell is still sh. 
+#this does not work
+# RUN /bin/bash -c catkin_make
+# But this works for some reason ¯\_(ツ)_/¯ (even though I changed the shell to bash above) 
+# RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd catkin_ws; catkin_make'
+# RUN source ~/catkin_ws/devel/setup.bash
+
+
+####################################
+## 3. setup sensors and world models 
+# need to update rosdep to run catkin build
+RUN rosdep update
+# get files from bits robocon
+RUN cd ~/catkin_ws/src && git clone -b aq_project https://github.com/anirudhs001/AutonomousDrone.git 
+
