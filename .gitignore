@@ -1,2 +1,4 @@
-g_mapper
+# editors
+.vscode
+
 sensors/velodyne_depricated
