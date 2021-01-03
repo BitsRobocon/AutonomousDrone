@@ -9,10 +9,18 @@
 `$ docker build --build-arg user=$USER -t work_env .`
 It will download ros, gazebo, px4 and some utilities, so it might take time to install.
 4. ONLY NEED TO DO THIS ONCE.
+Create a new Directory with `$ mkdir ~/Persist`  
+    This directory will be mounted in the container as well(at the same location).
+    Keep everything important in this folder, since it can be accessed if we update the container or even run stuff without a container.
 Create a new container with the image:
-`$ docker run -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix work_env bash`
+```console
+$ docker run -it -e DISPLAY=$DISPLAY \ 
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v /home/$USER/Persist:/home/$USER/Persist \
+    work_env bash
+```    
 
-    In another terminal, run `docker ps`. copy the top-most container ID(or container name).
+    In another terminal, run `$ docker ps`. copy the top-most container ID(or container name).
 save this container ID(or container_NAME) somewhere.
 
 5. To exit from this docker container in the original bash shell, type `$ exit` at the prompt.
@@ -62,7 +70,12 @@ If you are still unable to resolve the issue, [switch back to built-in Nouveau d
 
 You will need to recreate an image that is repeat the steps from
 > Create a new container with the image:
-`$ docker run -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix work_env bash`
+```console
+$ docker run -it -e DISPLAY=$DISPLAY \ 
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v /home/$USER/Persist:/home/$USER/Persist \
+    work_env bash
+```    
 
 ## Issues with dbus
 If while running **rviz** (`rosrun rviz rviz`), you get a error as below: ([similar](https://answers.ros.org/question/301056/ros2-rviz-in-docker-container/))
@@ -71,9 +84,13 @@ D-Bus not built with -rdynamic so unable to print a backtrace
 ```
 
 You need to create the image by using below command
-```bash
-$ docker run --net=host --priviliged -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix work_env bash
-```
+```console
+$ docker run -it -e DISPLAY=$DISPLAY \ 
+    --net-host --privileged \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v /home/$USER/Persist:/home/$USER/Persist \
+    work_env bash
+```    
 
 ## Success?
 There is no thumb rule to determine if the docker container has been successfully setup though you can quickly open below programs to verify if they are running.
@@ -94,7 +111,7 @@ After successfully creating the container (that is gazebo & rviz opening up) wit
 # All steps within the docker container
 **Note**: Your username and hostname for the container shall vary from mine (which is `hardik@Inspiron-5580`)
 
-Install your favourite code editor, for this setup I have used **nano**
+Install your favourite code editor, for this setup I have used **nano** 
 ```bash
 hardik@Inspiron-5580:~$ sudo apt-get update && sudo apt-get install nano
 ```
