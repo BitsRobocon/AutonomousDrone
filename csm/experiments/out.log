@@ -1,0 +1,9 @@
+sm3: CPU time = 1.059146 (seconds) (start=109420 end=1168566)
+sm3: Total number of matchings = 777
+sm3: Total number of iterations = 5241
+sm3: Avg. iterations per matching = 6.745174
+sm3: Avg. seconds per matching = 0.001363
+sm3:   that is, 733 matchings per second
+sm3: Avg. seconds per iteration = 0.000202 (note: very imprecise)
+sm3: Number of comparisons = 11404921 
+sm3: Avg. comparisons per ray per iteration = 6.027968 
