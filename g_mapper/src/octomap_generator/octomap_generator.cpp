@@ -65,7 +65,7 @@ namespace g_mapper {
 
         if(raycast_cloud.size() > 0) {
             // refer to: https://octomap.github.io/octomap/doc/classoctomap_1_1OccupancyOcTreeBase.html#a3c6d38e8a7028416cd23449f14e215e8
-            octomap_.insertPointCloud(raycast_cloud, origin, raycast_range, false, true); // discretization is true.
+            octomap_.insertPointCloud(raycast_cloud, origin, raycast_range, false, false); // discretization is true.
         }
         // Update colors.
         updateColor(&pcl_cloud);
