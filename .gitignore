@@ -1,2 +1,6 @@
 sensors/velodyne_depricated
 octomap_rviz_plugins
+# editors
+.vscode
+
+sensors/velodyne_depricated
