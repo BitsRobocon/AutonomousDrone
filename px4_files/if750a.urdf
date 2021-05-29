@@ -1,0 +1,197 @@
+<!-- This file is assumed to be in the same directory as of if750a.sdf in our Firmware -->
+<?xml version="1.0"?>
+<robot name="if750a_robocon">
+    <!-- TODO: Find how to incorporate the link's pose from sdf in urdf eg: line 89 of if750a.sdf-->
+    <link name="base_link">
+        <inertial>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <mass value = "1.5"/>
+            <inertia ixx="0.0347563" ixy="0" ixz="0" iyy="0.0458929" iyz="0" izz="0.0977"/>
+        </inertial>
+        <collision>
+            <geometry>
+                <box size = "0.47 0.47 0.11"/>
+            </geometry>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+        </collision>
+        <visual>
+            <origin rpy = "1.570796 -0 1.57079632679489661923" xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename="model://if750a/meshes/if750a.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+        </visual>        
+    </link>
+
+    <gazebo reference = "base_link">
+        <collision>
+            <surface>
+                <contact>
+                    <ode>
+                    <min_depth>0.001</min_depth>
+                    <max_vel>0</max_vel>
+                    </ode>
+                </contact>
+                <friction>
+                    <ode>
+                    </ode>
+                </friction>
+            </surface>
+            <!-- <gravity>1</gravity> -->
+        </collision>
+        <material>Gazebo/DarkGrey</material>
+        <self_collide>0</self_collide>
+    </gazebo>
+
+    <link name="/imu_link">
+        <inertial>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <mass value = "0.015"/>
+            <inertia ixx="1e-05" ixy="0" ixz="0" iyy="1e-05" iyz="0" izz="1e-05"/>
+        </inertial>
+    </link>
+
+    <joint name="/imu_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="/imu_link"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="0" upper="0" effort="0" velocity="0"/>
+    </joint>
+
+    <link name="rotor_0">
+        
+        <inertial>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <mass value = "0.005"/>
+            <inertia ixx="9.75e-07" ixy="0" ixz="0" iyy="0.000273104" iyz="0" izz="0.000274004"/>
+        </inertial>
+
+        <collision>
+            <geometry>
+                <cylinder radius="0.128" length="0.005"/>
+            </geometry>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+        </collision>
+
+        <visual>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename="model://iris/meshes/iris_prop_ccw.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <gazebo reference="rotor_0">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <joint name="rotor_0_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="rotor_0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-1e+16" upper="1e+16" effort="0" velocity="0"/>
+    </joint>
+
+    <link name="rotor_1">
+        
+        <inertial>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <mass value = "0.005"/>
+            <inertia ixx="9.75e-07" ixy="0" ixz="0" iyy="0.000273104" iyz="0" izz="0.000274004"/>
+        </inertial>
+
+        <collision>
+            <geometry>
+                <cylinder radius="0.128" length="0.005"/>
+            </geometry>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+        </collision>
+
+        <visual>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename="model://iris/meshes/iris_prop_ccw.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <gazebo reference="rotor_1">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <joint name="rotor_1_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="rotor_1"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-1e+16" upper="1e+16" effort="0" velocity="0"/>
+    </joint>
+
+    <link name="rotor_2">
+        
+        <inertial>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <mass value = "0.005"/>
+            <inertia ixx="9.75e-07" ixy="0" ixz="0" iyy="0.000273104" iyz="0" izz="0.000274004"/>
+        </inertial>
+
+        <collision>
+            <geometry>
+                <cylinder radius="0.128" length="0.005"/>
+            </geometry>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+        </collision>
+
+        <visual>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename="model://iris/meshes/iris_prop_cw.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <gazebo reference="rotor_2">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <joint name="rotor_2_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="rotor_2"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-1e+16" upper="1e+16" effort="0" velocity="0"/>
+    </joint>
+
+    <link name="rotor_3">
+        
+        <inertial>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <mass value = "0.005"/>
+            <inertia ixx="9.75e-07" ixy="0" ixz="0" iyy="0.000273104" iyz="0" izz="0.000274004"/>
+        </inertial>
+
+        <collision>
+            <geometry>
+                <cylinder radius="0.128" length="0.005"/>
+            </geometry>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+        </collision>
+
+        <visual>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename="model://iris/meshes/iris_prop_cw.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <gazebo reference="rotor_3">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <joint name="rotor_3_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="rotor_3"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-1e+16" upper="1e+16" effort="0" velocity="0"/>
+    </joint>
+<!-- TODO: Convert line 352 and below from sdf file -->
+
+</robot>
